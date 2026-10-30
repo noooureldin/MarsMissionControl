@@ -1,0 +1,129 @@
+@startuml
+title MARS-OPS Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package agents {
+  abstract class Agent
+  abstract class CrewMember
+  abstract class Robot
+  class Engineer
+  class Scientist
+  class MedicalOfficer
+  class ExplorationRover
+  class RepairRobot
+  class Drone
+}
+
+package colony {
+  class MarsColony
+  class Simulation
+  interface EnvironmentManager
+  enum MissionState
+}
+
+package missions {
+  abstract class Mission
+  class ExplorationMission
+  class ResearchMission
+  class MissionManager
+}
+
+package emergencies {
+  abstract class Emergency
+  class OxygenLeak
+  class RoverBreakdown
+  class EmergencyManager
+}
+
+package facilities {
+  abstract class Facility
+  class Habitat
+  class Laboratory
+  class StorageFacility
+  class PowerStation
+  class ResourceInventory
+  class LifeSupportSystem
+  class Equipment
+}
+
+package environment {
+  class Environment
+  enum EnvironmentalCondition
+}
+
+package common {
+  enum Capability
+  enum EmergencyType
+  enum ResourceType
+  class Location
+  class MissionSpec
+  class OperationResult
+  class ResourceRequest
+}
+
+class ResourceManager
+class Main
+
+Agent <|-- CrewMember
+Agent <|-- Robot
+CrewMember <|-- Engineer
+CrewMember <|-- Scientist
+CrewMember <|-- MedicalOfficer
+Robot <|-- ExplorationRover
+Robot <|-- RepairRobot
+Robot <|-- Drone
+
+Facility <|-- Habitat
+Facility <|-- Laboratory
+Facility <|-- StorageFacility
+Facility <|-- PowerStation
+
+Mission <|-- ExplorationMission
+Mission <|-- ResearchMission
+Emergency <|-- OxygenLeak
+Emergency <|-- RoverBreakdown
+
+MarsColony o-- "0..*" Agent : manages
+MarsColony o-- "0..*" Facility : contains
+MarsColony o-- "0..1" Mission : active mission
+MarsColony --> EnvironmentManager : reads
+Simulation --> MarsColony : advances
+MissionManager o-- "0..1" Mission : tracks
+EmergencyManager --> MarsColony : delegates to
+
+Mission --> "0..*" Agent : assigns
+Mission --> "0..1" Facility : targets
+Mission --> MissionState : has state
+Mission --> Capability : requires
+Mission --> ResourceType : consumes
+
+Emergency --> Facility : occurs at
+Emergency --> Capability : requires
+Emergency --> ResourceType : consumes
+RoverBreakdown --> ExplorationRover : affects
+
+Facility *-- ResourceInventory : owns
+Habitat *-- LifeSupportSystem : owns
+ResourceManager --> Facility : aggregates
+Environment --> EnvironmentalCondition : stores
+EnvironmentManager --> EnvironmentalCondition : returns
+
+Agent --> Capability : performs
+Agent --> EmergencyType : handles
+MissionSpec --> Capability
+MissionSpec --> ResourceType
+ResourceRequest --> ResourceType
+
+Main --> MarsColony : demonstrates
+Main --> Mission
+Main --> Emergency
+
+note right of Main
+  Runs five demonstration scenarios:
+  exploration, rejection, shortage,
+  emergency response, and dust storm.
+end note
+
+@enduml
