@@ -101,10 +101,6 @@ public class MarsColony {
             consumeColonyResource(entry.getKey(), entry.getValue());
         }
 
-        for (Agent agent : proposedAgents) {
-            agent.assign();
-        }
-
         mission.assignAgents(proposedAgents);
         mission.start();
         this.activeMission = mission;
