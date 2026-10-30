@@ -4,6 +4,7 @@ import common.ResourceType;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ResourceInventory {
     private final Map<ResourceType, Integer> quantities;
@@ -16,16 +17,22 @@ public class ResourceInventory {
     }
 
     public int getQuantity(ResourceType type) {
+        Objects.requireNonNull(type, "type");
         return quantities.getOrDefault(type, 0);
     }
 
     public void addResource(ResourceType type, int amount) {
+        Objects.requireNonNull(type, "type");
+        if (amount < 0) {
+            throw new IllegalArgumentException("Resource amount cannot be negative");
+        }
         if (amount > 0) {
             quantities.put(type, getQuantity(type) + amount);
         }
     }
 
     public boolean consumeResource(ResourceType type, int amount) {
+        Objects.requireNonNull(type, "type");
         if (amount <= 0) return false;
         int current = getQuantity(type);
         if (current >= amount) {
@@ -36,6 +43,7 @@ public class ResourceInventory {
     }
 
     public int forceDeduct(ResourceType type, int amount) {
+        Objects.requireNonNull(type, "type");
         if (amount <= 0) return 0;
         int current = getQuantity(type);
         int actualLost = Math.min(current, amount);
